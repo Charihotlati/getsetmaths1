@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GetSetMaths - Visual Fractions</title>
+  <style>
+    body {
+      font-family: 'Lexend', 'Comic Sans MS', sans-serif;
+      background-color: #fcf8ed; /* Soft cream background for low visual stress */
+      color: #222;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+    }
+    .app-card {
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 25px;
+      max-width: 550px;
+      width: 100%;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+      border: 3px solid #e2e8f0;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .logo {
+      font-size: 22px;
+      font-weight: bold;
+      color: #2b6cb0;
+    }
+    .audio-btn {
+      background-color: #48bb78;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 50px;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: bold;
+    }
+    .audio-btn:hover { background-color: #38a169; }
+    .question-box {
+      background-color: #ebf8ff;
+      border-left: 6px solid #3182ce;
+      padding: 15px;
+      border-radius: 8px;
+      font-size: 18px;
+      margin-bottom: 25px;
+      line-height: 1.5;
+    }
+    .fraction-container {
+      background-color: #f7fafc;
+      border: 2px solid #e2e8f0;
+      padding: 15px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+    .fraction-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .bar-wrapper {
+      display: flex;
+      height: 45px;
+      border: 3px solid #2d3748;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+    .segment {
+      flex: 1;
+      border-right: 2px solid #2d3748;
+      background-color: #edf2f7;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .segment:last-child { border-right: none; }
+    .segment.active-1 { background-color: #3182ce; } /* Blue for Fraction 1 */
+    .segment.active-2 { background-color: #805ad5; } /* Purple for Fraction 2 */
+    
+    .num-blue { color: #3182ce; font-weight: bold; }
+    .den-green { color: #38a169; font-weight: bold; }
+    
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 20px;
+    }
+    .opt-btn {
+      padding: 14px;
+      font-size: 18px;
+      font-weight: bold;
+      border-radius: 12px;
+      border: 2px solid #cbd5e0;
+      background: white;
+      cursor: pointer;
+    }
+    .opt-btn:hover { background-color: #edf2f7; }
+    .feedback {
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 8px;
+      text-align: center;
+      font-weight: bold;
+      font-size: 18px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-card">
+  <div class="header">
+    <div class="logo">🚀 GetSetMaths 6</div>
+    <button class="audio-btn" onclick="speakQuestion()">🔊 Read Aloud</button>
+  </div>
+
+  <div class="question-box" id="qText">
+    Tap the slices to shade them! Which fraction is bigger: 
+    <span class="num-blue">3</span>/<span class="den-green">4</span> or 
+    <span class="num-blue">2</span>/<span class="den-green">3</span>?
+  </div>
+
+  <!-- Fraction 1 -->
+  <div class="fraction-container">
+    <div class="fraction-title">Fraction A: 3/4</div>
+    <div class="bar-wrapper" id="bar1">
+      <div class="segment" onclick="toggleSegment(this, 'active-1')"></div>
+      <div class="segment" onclick="toggleSegment(this, 'active-1')"></div>
+      <div class="segment" onclick="toggleSegment(this, 'active-1')"></div>
+      <div class="segment" onclick="toggleSegment(this, 'active-1')"></div>
+    </div>
+    <small>Tap segments to shade 3 out of 4 parts.</small>
+  </div>
+
+  <!-- Fraction 2 -->
+  <div class="fraction-container">
+    <div class="fraction-title">Fraction B: 2/3</div>
+    <div class="bar-wrapper" id="bar2">
+      <div class="segment" onclick="toggleSegment(this, 'active-2')"></div>
+      <div class="segment" onclick="toggleSegment(this, 'active-2')"></div>
+      <div class="segment" onclick="toggleSegment(this, 'active-2')"></div>
+    </div>
+    <small>Tap segments to shade 2 out of 3 parts.</small>
+  </div>
+
+  <!-- Options -->
+  <div class="options-grid">
+    <button class="opt-btn" onclick="checkAnswer('A')">3/4 is Larger</button>
+    <button class="opt-btn" onclick="checkAnswer('B')">2/3 is Larger</button>
+  </div>
+
+  <div class="feedback" id="feedbackBox"></div>
+</div>
+
+<script>
+  function toggleSegment(el, className) {
+    el.classList.toggle(className);
+  }
+
+  function speakQuestion() {
+    const text = "Tap the slices to shade them! Which fraction is bigger: 3 over 4, or 2 over 3?";
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 0.85; // Slightly slower speech speed for better clarity
+    window.speechSynthesis.speak(utterance);
+  }
+
+  function checkAnswer(choice) {
+    const feedback = document.getElementById('feedbackBox');
+    feedback.style.display = 'block';
+    
+    if (choice === 'A') {
+      feedback.style.backgroundColor = '#c6f6d5';
+      feedback.style.color = '#22543d';
+      feedback.innerText = "🎉 Excellent work! 3/4 is larger than 2/3!";
+      
+      const audio = new Spe⁷echSynthesisUtterance("Excellent work! 3 over 4 is larger than 2 over 3!");
+      window.speechSynthesis.speak(audio);
+    } else {
+      feedback.style.backgroundColor = '#fed7d7';
+      feedback.style.color = '#742a2a';
+      feedback.innerText = "💡 Look closely at the colored bars above! Which shaded bar stretches further to the right?";
+      
+      const audio = new SpeechSynthesisUtterance("Look closely at the colored bars above! Which shaded bar stretches further to the right?");
+      window.speechSynthesis.speak(audio);
+    }
+  }
+</script>
+
+</body>
+</html>
